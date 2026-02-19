@@ -26,9 +26,15 @@ const GSRE: React.FC = () => {
   }, [searchTerm, selectedRegion]);
 
   const runReplicationAI = async (countryName: string) => {
+    const apiKey = process.env.API_KEY;
+    if (!apiKey) {
+      setPrediction("API Key not found. Please ensure the environment is configured correctly.");
+      return;
+    }
+
     setLoading(true);
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      const ai = new GoogleGenAI({ apiKey });
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
         contents: `Given the positive deviance detected in ${countryName}, predict the most effective cross-border replication strategy for similar regions. Provide a concise, technical institutional directive in one sentence.`,
