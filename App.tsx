@@ -14,7 +14,9 @@ import {
   Sun,
   ShieldCheck,
   Bell,
-  Scale
+  Scale,
+  Wifi,
+  WifiOff
 } from 'lucide-react';
 import { AppSection } from './types';
 import Overview from './components/Overview';
@@ -30,6 +32,7 @@ const App: React.FC = () => {
   const [activeSection, setActiveSection] = useState<AppSection>(AppSection.OVERVIEW);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isApiActive, setIsApiActive] = useState(false);
 
   useEffect(() => {
     if (isDarkMode) {
@@ -39,11 +42,18 @@ const App: React.FC = () => {
     }
   }, [isDarkMode]);
 
+  useEffect(() => {
+    // Check if API key is present and not the default placeholder
+    const key = process.env.API_KEY;
+    const hasActiveKey = !!key && key !== 'your_gemini_api_key_here' && key !== '';
+    setIsApiActive(hasActiveKey);
+  }, []);
+
   const navigation = [
     { id: AppSection.OVERVIEW, name: 'Dashboard', icon: Layers },
     { id: AppSection.ABOUT, name: 'About Platform', icon: BookOpen },
     { id: AppSection.GSRE, name: 'GSRE Engine', icon: GitBranch },
-    { id: AppSection.PLM, name: 'PLM Network', icon: Globe },
+    { id: AppSection.PLM, name: 'Latency Mapping', icon: Globe },
     { id: AppSection.GIAE, name: 'Allocation Engine', icon: PieChart },
     { id: AppSection.IMA, name: 'Institutional Memory', icon: ShieldCheck },
     { id: AppSection.POLICYWATCH, name: 'PolicyWatch', icon: Scale },
@@ -51,7 +61,7 @@ const App: React.FC = () => {
   ];
 
   return (
-    <div className="flex h-screen bg-white dark:bg-slate-950 transition-colors duration-300 overflow-hidden">
+    <div className="flex h-screen bg-white dark:bg-slate-950 transition-colors duration-300 overflow-hidden text-slate-900 dark:text-slate-100">
       <aside 
         className={`${
           isSidebarOpen ? 'w-64' : 'w-20'
@@ -116,6 +126,10 @@ const App: React.FC = () => {
             </div>
           </div>
           <div className="flex items-center gap-4">
+            <div className={`hidden lg:flex items-center gap-2 text-[10px] font-black uppercase px-4 py-2 rounded-full border transition-all ${isApiActive ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-100 dark:border-emerald-800 text-emerald-600' : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-400'}`}>
+              {isApiActive ? <Wifi size={12} className="animate-pulse" /> : <WifiOff size={12} />}
+              {isApiActive ? 'AI Core Connected' : 'Local Sandbox Mode'}
+            </div>
             <div className="hidden md:flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-full border border-slate-200 dark:border-slate-700">
               <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
               196 REGIONS MONITORED
